@@ -14,4 +14,5 @@
     <string name="action_settings">Ajustes</string>
     <string name="splash_author">David Martínez - MV12013</string>
     <string name="menu_logout">Cerrar Sesión</string>
+    <string name="webview_generic_error">No se pudo cargar el mapa. Verifica tu conexión.</string>
 </resources>

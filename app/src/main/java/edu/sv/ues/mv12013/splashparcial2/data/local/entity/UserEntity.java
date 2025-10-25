@@ -8,16 +8,30 @@ import androidx.room.PrimaryKey;
 public class UserEntity {
     @PrimaryKey
     @NonNull
-    public String uid;         // uid de Firebase
+    public String uid;           // uid de Firebase (offline puede ser "local_<email>")
 
     public String email;
     public String fullName;
-    public boolean remember;   // para “Recordarme” (opcional)
+    public boolean remember;
+
+    // nuevos campos para login offline
+    public String passwordHash;
+    public long createdAt;
+    public long updatedAt;
 
     public UserEntity(@NonNull String uid, String email, String fullName, boolean remember) {
         this.uid = uid;
         this.email = email;
         this.fullName = fullName;
         this.remember = remember;
+    }
+
+    public static UserEntity createLocal(String uid, String email, String fullName, boolean remember, String passwordHash) {
+        UserEntity u = new UserEntity(uid, email, fullName, remember);
+        u.passwordHash = passwordHash;
+        long now = System.currentTimeMillis();
+        u.createdAt = now;
+        u.updatedAt = now;
+        return u;
     }
 }

@@ -3,6 +3,10 @@ package edu.sv.ues.mv12013.splashparcial2.data.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import android.util.Log;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +28,8 @@ public class UserRepository {
     private final FirebaseAuth auth;
     private final FirebaseFirestore firestore;
     private final SharedPreferences prefs;
+
+    private static final String TAG = "UserRepository";
 
     public UserRepository(Context context) {
         this.userDao = AppDatabase.getInstance(context).userDao();
@@ -66,32 +72,55 @@ public class UserRepository {
             return;
         }
 
-        // Obtener datos completos desde Firestore
+        // Intentar obtener el doc; si no existe, lo creamos con mínimos campos
         firestore.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
-                    String fullName = doc.exists() && doc.contains("fullName")
-                            ? doc.getString("fullName") : "";
-
-                    UserEntity user = new UserEntity(uid, email, fullName, remember);
-                    cacheUser(user);
-
-                    if (remember) {
-                        prefs.edit()
-                                .putString("email", email)
-                                .putBoolean("remember", true)
-                                .apply();
+                    if (doc.exists()) {
+                        String fullName = doc.contains("fullName") ? doc.getString("fullName") : "";
+                        UserEntity user = new UserEntity(uid, email, fullName, remember);
+                        cacheUser(user);
+                        persistRemember(email, remember);
+                        cb.onComplete(Result.success(user, null));
                     } else {
-                        prefs.edit().clear().apply();
+                        Log.w(TAG, "User doc not found for uid=" + uid + ", creating minimal doc...");
+                        Map<String, Object> minimal = new HashMap<>();
+                        minimal.put("uid", uid);
+                        minimal.put("email", email);
+                        minimal.put("fullName", ""); // vacío por ahora
+                        firestore.collection("users").document(uid)
+                                .set(minimal)
+                                .addOnSuccessListener(unused2 -> {
+                                    UserEntity user = new UserEntity(uid, email, "", remember);
+                                    cacheUser(user);
+                                    persistRemember(email, remember);
+                                    cb.onComplete(Result.success(user, null));
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Failed to create minimal user doc", e);
+                                    // Aun así dejamos entrar para no bloquear al usuario
+                                    UserEntity user = new UserEntity(uid, email, "", remember);
+                                    cacheUser(user);
+                                    persistRemember(email, remember);
+                                    cb.onComplete(Result.success(user, null));
+                                });
                     }
-
-                    cb.onComplete(Result.success(user));
                 })
                 .addOnFailureListener(e -> {
-                    // Si falla Firestore, igual devolvemos usuario básico
+                    Log.e(TAG, "fetch user doc failure", e);
+                    // Permitimos login pero con nombre vacío
                     UserEntity user = new UserEntity(uid, email, "", remember);
                     cacheUser(user);
-                    cb.onComplete(Result.success(user));
+                    persistRemember(email, remember);
+                    cb.onComplete(Result.success(user, null));
                 });
+    }
+
+    private void persistRemember(String email, boolean remember) {
+        if (remember) {
+            prefs.edit().putString("email", email).putBoolean("remember", true).apply();
+        } else {
+            prefs.edit().clear().apply();
+        }
     }
 
     // ========== REGISTRO REMOTO (Firebase Auth + Firestore) ==========
@@ -111,21 +140,29 @@ public class UserRepository {
                     doc.put("uid", uid);
                     doc.put("email", email);
                     doc.put("fullName", fullName);
+                    doc.put("createdAt", System.currentTimeMillis());
 
                     firestore.collection("users").document(uid)
                             .set(doc)
                             .addOnSuccessListener(unused -> {
+                                Log.d(TAG, "User doc created in Firestore for uid=" + uid);
                                 UserEntity user = new UserEntity(uid, email, fullName, false);
                                 cacheUser(user);
-                                cb.onComplete(Result.success(user));
+                                cb.onComplete(Result.success(user, null));
                             })
-                            .addOnFailureListener(e -> cb.onComplete(Result.error(
-                                    e.getMessage() != null ? e.getMessage() : "Error guardando en Firestore"
-                            )));
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Error saving user doc to Firestore", e);
+                                cb.onComplete(Result.error(
+                                        e.getMessage() != null ? e.getMessage() : "Error guardando en Firestore"
+                                ));
+                            });
                 })
-                .addOnFailureListener(e -> cb.onComplete(Result.error(
-                        e.getMessage() != null ? e.getMessage() : "Error creando usuario"
-                )));
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "FirebaseAuth createUser failure", e);
+                    cb.onComplete(Result.error(
+                            e.getMessage() != null ? e.getMessage() : "Error creando usuario"
+                    ));
+                });
     }
 
     // ========== ACTUALIZAR PERFIL (local + remoto) ==========
@@ -148,7 +185,7 @@ public class UserRepository {
                                 userDao.update(user);
                             }
                         }).start();
-                        cb.onComplete(Result.success(null));
+                        cb.onComplete(Result.success(null, null));
                     })
                     .addOnFailureListener(e -> cb.onComplete(Result.error(
                             e.getMessage() != null ? e.getMessage() : "Error actualizando perfil"
@@ -163,7 +200,7 @@ public class UserRepository {
                     // TODO: Crear PendingSync en Room para sincronizar después
                 }
             }).start();
-            cb.onComplete(Result.success(null));
+            cb.onComplete(Result.success(null, null));
         }
     }
 

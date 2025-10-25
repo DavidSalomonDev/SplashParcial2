@@ -41,7 +41,8 @@ public class RegisterFragment extends Fragment {
         vm.uiState.observe(getViewLifecycleOwner(), state -> {
             progress.setVisibility(state == UiState.Loading ? View.VISIBLE : View.GONE);
             if (state instanceof UiState.Error) {
-                Toast.makeText(requireContext(), ((UiState.Error) state).message, Toast.LENGTH_SHORT).show();
+                String msg = ((UiState.Error) state).message;
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show();
             }
             // Al registrar, volver a Login
             if (state == UiState.Success) {

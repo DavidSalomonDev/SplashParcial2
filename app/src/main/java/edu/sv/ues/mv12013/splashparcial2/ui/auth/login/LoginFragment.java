@@ -51,7 +51,8 @@ public class LoginFragment extends Fragment {
             else progress.setVisibility(View.GONE);
 
             if (state instanceof UiState.Error) {
-                Toast.makeText(requireContext(), ((UiState.Error) state).message, Toast.LENGTH_SHORT).show();
+                String msg = ((UiState.Error) state).message;
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show();
             }
             if (state == UiState.Success) {
                 startActivity(new Intent(requireContext(), HomeActivity.class));

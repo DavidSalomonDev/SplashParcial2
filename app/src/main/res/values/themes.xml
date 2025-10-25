@@ -1,9 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.SplashParcial2" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <!-- Tema principal sin ActionBar -->
+    <style name="Theme.SplashParcial2" parent="Theme.Material3.Light.NoActionBar">
+        <!-- colores, etc -->
     </style>
 
-    <style name="Theme.SplashParcial2" parent="Base.Theme.SplashParcial2" />
+    <!-- Tema para la Activity de Splash usando AndroidX SplashScreen -->
+    <style name="Theme.SplashParcial2.Splash" parent="Theme.SplashScreen">
+        <!-- Icono que aparece en el splash -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <!-- Tema que tomará la app después del splash -->
+        <item name="postSplashScreenTheme">@style/Theme.SplashParcial2</item>
+    </style>
 </resources>

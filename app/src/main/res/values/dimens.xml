@@ -1,3 +1,5 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="screen_padding">24dp</dimen>
+    <dimen name="field_vertical_gap">12dp</dimen>
+    <dimen name="button_top_gap">16dp</dimen>
 </resources>

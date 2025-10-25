@@ -111,9 +111,12 @@ public class AuthRepository {
         List<PendingSyncEntity> list = pendingDao.getAll();
         for (PendingSyncEntity p : list) {
             try {
-                Map<?,?> payload = gson.fromJson(p.payload, Map.class);
-                String op = (String) payload.get("op");
-                if ("REGISTER".equals(op)) {
+                Map<?, ?> payload = gson.fromJson(p.payload, Map.class);
+                String op = (String) payload.get("op"); // ojo: tus payloads REGISTER usan "op"
+                // Para uniformidad, aceptamos ambos formatos: con "op" o usando p.type
+                String effectiveType = (op != null && !op.isEmpty()) ? op : p.type;
+
+                if ("REGISTER".equals(effectiveType)) {
                     String email = (String) payload.get("email");
                     String fullName = (String) payload.get("fullName");
                     String password = (String) payload.get("password");
@@ -127,6 +130,15 @@ public class AuthRepository {
                     data.put("fullName", fullName);
                     data.put("createdAt", System.currentTimeMillis());
                     Tasks.await(firestore.collection("users").document(uid).set(data));
+                } else if ("PROFILE_UPDATE".equals(effectiveType) || "UPDATE_NAME".equals(effectiveType)) {
+                    // Soportamos ambos labels por si llegan de otros puntos
+                    String uid = (String) payload.get("uid");
+                    String fullName = (String) payload.get("fullName");
+                    if (uid != null) {
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("fullName", fullName != null ? fullName : "");
+                        Tasks.await(firestore.collection("users").document(uid).update(updates));
+                    }
                 }
                 pendingDao.delete(p);
             } catch (Exception ignored) {
@@ -147,6 +159,7 @@ public class AuthRepository {
             r.uid = uid;
             return r;
         }
+
         static Result queued(String uid, String msg) {
             Result r = new Result();
             r.ok = true;
@@ -155,6 +168,7 @@ public class AuthRepository {
             r.message = msg;
             return r;
         }
+
         static Result error(String msg) {
             Result r = new Result();
             r.ok = false;

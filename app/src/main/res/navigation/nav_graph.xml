@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="edu.sv.ues.mv12013.splashparcial2.ui.SplashFragment"
+        android:name="edu.sv.ues.mv12013.splashparcial2.ui.splash.SplashFragment"
         android:label="Splash">
         <action
             android:id="@+id/action_splash_to_login"
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="edu.sv.ues.mv12013.splashparcial2.ui.LoginFragment"
+        android:name="edu.sv.ues.mv12013.splashparcial2.ui.auth.login.LoginFragment"
         android:label="Login">
         <action
             android:id="@+id/action_login_to_register"
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="edu.sv.ues.mv12013.splashparcial2.ui.RegisterFragment"
+        android:name="edu.sv.ues.mv12013.splashparcial2.ui.auth.register.RegisterFragment"
         android:label="Register">
         <action
             android:id="@+id/action_register_to_login"
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="edu.sv.ues.mv12013.splashparcial2.ui.HomeFragment"
+        android:name="edu.sv.ues.mv12013.splashparcial2.ui.home.HomeFragment"
         android:label="Home">
         <action
             android:id="@+id/action_home_to_profile"
@@ -56,6 +56,6 @@
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="edu.sv.ues.mv12013.splashparcial2.ui.ProfileFragment"
+        android:name="edu.sv.ues.mv12013.splashparcial2.ui.profile.ProfileFragment"
         android:label="Perfil" />
 </navigation>

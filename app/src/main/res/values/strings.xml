@@ -12,4 +12,5 @@
     <string name="open_map">Ver mapa</string>
     <string name="action_save">Guardar</string>
     <string name="action_settings">Ajustes</string>
+    <string name="splash_author">David Martínez - MV12013</string>
 </resources>

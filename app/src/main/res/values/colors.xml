@@ -13,4 +13,6 @@
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorOnBackground">#000000</color>
 
+    <color name="splash_background_color">#EEEEEE</color>
+
 </resources>

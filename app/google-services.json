@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698407653211",
+    "project_id": "splashparcial2",
+    "storage_bucket": "splashparcial2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698407653211:android:bd7def7770429a548a547e",
+        "android_client_info": {
+          "package_name": "edu.sv.ues.mv12013.splashparcial2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL7I_DU7-5VqcehmKVmCzrxrjLRJYxKts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

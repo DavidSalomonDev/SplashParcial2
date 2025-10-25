@@ -2,26 +2,38 @@ package edu.sv.ues.mv12013.splashparcial2.ui.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import edu.sv.ues.mv12013.splashparcial2.ui.auth.AuthActivity;
+
+import android.animation.ValueAnimator;
+
+import edu.sv.ues.mv12013.splashparcial2.R;
 import edu.sv.ues.mv12013.splashparcial2.ui.home.HomeActivity;
-import androidx.core.splashscreen.SplashScreen;
+import edu.sv.ues.mv12013.splashparcial2.ui.auth.AuthActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final long SPLASH_DURATION_MS = 3000L;
 
-    @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
-        SplashScreen.installSplashScreen(this);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        navigate();
+        setTheme(R.style.Theme_SplashParcial2);
+        setContentView(R.layout.activity_splash);
+
+        new Handler(Looper.getMainLooper())
+                .postDelayed(this::routeFromSession, SPLASH_DURATION_MS);
     }
 
-    private void navigate() {
-        boolean loggedIn = FirebaseAuth.getInstance().getCurrentUser() != null;
-        Intent i = new Intent(this, loggedIn ? HomeActivity.class : AuthActivity.class);
-        startActivity(i);
+    private void routeFromSession() {
+        boolean isLoggedIn = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+                .getBoolean("logged_in", false);
+
+        Intent intent = new Intent(this, isLoggedIn ? HomeActivity.class : AuthActivity.class);
+        startActivity(intent);
         finish();
     }
 }

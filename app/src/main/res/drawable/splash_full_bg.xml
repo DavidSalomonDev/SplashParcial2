@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Color de fondo para evitar bordes vacíos -->
+    <item android:drawable="@color/splash_background_color"/>
+
+    <!-- Imagen a pantalla completa con centerCrop -->
+    <item>
+        <bitmap
+            android:src="@drawable/splash_logo"
+            android:antialias="true"
+            android:dither="true"
+            android:filter="true"
+            android:gravity="center"
+            android:tileMode="disabled" />
+    </item>
+</layer-list>
